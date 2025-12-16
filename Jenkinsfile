@@ -2,17 +2,9 @@ pipeline {
     agent { label 'docker' }
 
     stages {
-
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()
-            }
-        }
-
         stage('Clone Repo') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/pujaraamen/jenkins.git'
+                git branch: 'main', url: 'https://github.com/pujaraamen2/jenkins.git'
             }
         }
 
@@ -24,10 +16,11 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                sh '''
-                docker rm -f flask_app || true
-                docker run -d --name flask_app -p 5000:5000 jenkins-flask-app
-                '''
+                // Remove old container if exists, ignore errors
+                sh 'docker rm -f flask_app || true'
+
+                // Run the container, ensure Flask app binds to all interfaces
+                sh 'docker run -d --name flask_app -p 5000:5000 jenkins-flask-app'
             }
         }
     }
