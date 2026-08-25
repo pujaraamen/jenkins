@@ -1,14 +1,33 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+data = {
+    "name": "Aniket",
+    "company": "Ajinkya Bari",
+    "message": "Hello from Docker Agent 🚀"
+}
+
+
 @app.route("/")
 def home():
-    return "Hello from Aniket and Ajinkya Bari! 👋🐳"
+    return jsonify(data)
 
-@app.route("/about")
-def about():
-    return "This Flask application is running inside Docker."
+
+@app.route("/update", methods=["POST"])
+def update_data():
+    new_data = request.get_json()
+
+    if not new_data:
+        return jsonify({"error": "No data provided"}), 400
+
+    data.update(new_data)
+
+    return jsonify({
+        "message": "Data updated successfully",
+        "data": data
+    })
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
